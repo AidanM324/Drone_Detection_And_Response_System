@@ -1,0 +1,28 @@
+
+# Python
+__pycache__/
+*.py[cod]
+
+venv/
+.venv/
+
+# Logs & runtime outputs
+logs/
+runs/
+*.log
+
+# Images / videos generated, might need to change this in the future
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.avi
+
+# IDE / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
