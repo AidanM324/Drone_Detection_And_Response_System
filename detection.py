@@ -2,9 +2,27 @@ import cv2
 import logging
 from ultralytics import YOLO
 
-class YoloDetector:
+class DroneDetector:
     def __init__(self, model_path: str):
         self.model = YOLO(model_path)
         logging.info("Model loaded: %s", model_path)
 
+    def annotate(self, xbgr_frame, imgsz=640, conf=0.25):
+            # Drop alpha channel (XBGR -> BGR)
+            bgr = xbgr_frame[:, :, :3]
+            rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+
+            results = self.model.predict(rgb, imgsz=imgsz, conf=conf, verbose=False)
+            boxes = results[0].boxes
+
+            if len(boxes) > 0:
+                logging.info("Detected %d object(s)", len(boxes))
+                for box in boxes:
+                    cls_id = int(box.cls[0])
+                    conf = float(box.conf[0])
+                    name = self.model.names.get(cls_id, str(cls_id))
+                    logging.info("Class=%s Conf=%.2f", name, conf)
+
+            annotated = results[0].plot()  # ready for OpenCV encoding
+            return annotated, boxes
 
