@@ -76,10 +76,10 @@ try:
                 logging.info("Class=%s Conf=%.2f", name, conf)
 
         annotated = results[0].plot()
-        cv2.imshow("YOLO Live Detection", annotated)
+        # cv2.imshow("YOLO Live Detection", annotated)
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+        # if cv2.waitKey(1) & 0xFF == ord("q"):
+        #    break
 
 except KeyboardInterrupt:
     logging.info("Stopped by user")
@@ -90,7 +90,7 @@ except Exception:
 
 finally:
     picam.stop()
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
     logging.info("Camera stopped")
     logging.info("Session ended")
 
