@@ -14,8 +14,11 @@ ENABLE_YOLO = True
 
 app = Flask(__name__)
 
-logfile = setup_logging(LOG_DIR, prefix="stream")
-print("Logging to:", logfile)
+#logfile = setup_logging(LOG_DIR, prefix="stream")
+#print("Logging to:", logfile)
+
+csvfile, csv_writer = setup_logging(LOG_DIR, prefix="stream_csv")
+print("Logging to:", csvfile.name)
 
 cam = PiCamera(size=(640, 480))
 det = DroneDetector(MODEL_PATH) if ENABLE_YOLO else None
