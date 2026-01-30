@@ -1,4 +1,4 @@
-from tomlkit import datetime
+from datetime import datetime
 import cv2
 import logging
 import time
@@ -29,7 +29,7 @@ class DroneDetector:
 
         # initialising to zero
         detected = 0
-        conf = 0.0
+        confidence = 0.0
         x1 = y1 = x2 = y2 = area = 0.0
 
         results = self.model.predict(rgb, imgsz=imgsz, conf=conf, verbose=False)
@@ -39,21 +39,21 @@ class DroneDetector:
             #logging.info("Detected %d object(s)", len(boxes))
             #for box in boxes:
             detected = 1
-            box = boxes[0]
             #cls_id = int(box.cls[0])
-            conf = float(box.conf[0])
+            box = boxes[0]
+            confidence = float(box.conf[0])
             #name = self.model.names.get(cls_id, str(cls_id))
             x1, y1, x2, y2 = box.xyxy[0]
             area = (x2 - x1) * (y2 - y1)
-            logging.info("Frame=%d Conf=%.2f Area=%.0f", self.frame_id, conf, area)
+            logging.info("Frame=%d Conf=%.2f Area=%.0f", self.frame_id, confidence, area)
 
-        annotated = results[0].plot()  # ready for OpenCV encoding
+        annotated = results[0].plot(img=bgr.copy())  # ready for OpenCV encoding
 
         return annotated, {
             "timestamp": timestamp,
             "frame_id": self.frame_id,
             "detected": detected,
-            "confidence": conf,
+            "confidence": confidence,
             "x1": x1,
             "y1": y1,
             "x2": x2,
