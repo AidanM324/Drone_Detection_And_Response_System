@@ -2,13 +2,29 @@ import cv2
 import logging
 import traceback
 
-def mjpeg_generator(camera, detection=None, imgsz=640, conf=0.25):
+def mjpeg_generator(camera, detection=None, imgsz=640, conf=0.25, csv_writer=None, csvfile=None):
     try:
         while True:
             frame = camera.read()
 
             if detection:
-                annotated, _ = detection.annotate(frame, imgsz=imgsz, conf=conf)
+                annotated, data = detection.annotate(frame, imgsz=imgsz, conf=conf)
+
+                if csv_writer is not None:
+                    csv_writer.writerow([
+                        data["timestamp"],
+                        data["frame_id"],
+                        data["detected"],
+                        data["confidence"],
+                        data["x1"],
+                        data["y1"],
+                        data["x2"],
+                        data["y2"],
+                        data["area"],
+                        data["fps"]
+                    ])
+                    csvfile.flush()
+                    
                 out = annotated
             else:
                 # raw BGR frame for streaming
