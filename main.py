@@ -25,7 +25,7 @@ det = DroneDetector(MODEL_PATH) if ENABLE_YOLO else None
 
 @app.route("/")
 def index():
-    return render_template("index.html", logfile=logfile)
+    return render_template("index.html", logfile=csvfile.name)
 
 @app.route("/video")
 def video():
