@@ -1,3 +1,4 @@
+import atexit
 import logging
 from flask import Flask, Response, render_template
 
@@ -30,10 +31,15 @@ def index():
 @app.route("/video")
 def video():
     return Response(
-        mjpeg_generator(cam, detection=det, imgsz=640, conf=0.25),
+        mjpeg_generator(cam, detection=det, imgsz=640, conf=0.25, csv_writer=csv_writer, csvfile=csvfile),
         mimetype="multipart/x-mixed-replace; boundary=frame",
     )
 
 if __name__ == "__main__":
     logging.info("Flask server starting")
     app.run(host="0.0.0.0", port=5000, threaded=True)
+
+
+@atexit.register
+def close_csv():
+    csvfile.close()
