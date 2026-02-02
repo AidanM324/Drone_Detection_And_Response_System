@@ -1,4 +1,5 @@
 import time
+import cv2
 from picamera2 import Picamera2
 
 class PiCamera:
@@ -14,7 +15,9 @@ class PiCamera:
 
     def read(self):
         # Returns XBGR frame array
-        return self.picam.capture_array()
+        frame = self.picam.capture_array()
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        return frame    
 
     def close(self):
         self.picam.stop()

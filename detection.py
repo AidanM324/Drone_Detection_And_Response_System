@@ -48,6 +48,8 @@ class DroneDetector:
             logging.info("Frame=%d Conf=%.2f Area=%.0f", self.frame_id, confidence, area)
 
         annotated = results[0].plot(img=bgr.copy())  # ready for OpenCV encoding
+        #annotated_bgr = cv2.cvtColor(annotated, cv2.COLOR_RGB2BGR)
+        #annotated = results[0].plot()
 
         return annotated, {
             "timestamp": timestamp,
