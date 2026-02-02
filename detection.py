@@ -43,8 +43,10 @@ class DroneDetector:
             box = boxes[0]
             confidence = float(box.conf[0])
             #name = self.model.names.get(cls_id, str(cls_id))
-            x1, y1, x2, y2 = box.xyxy[0]
-            area = (x2 - x1) * (y2 - y1)
+            x1, y1, x2, y2 = box.xyxy[0].tolist()
+            width = x2 - x1
+            height = y2 - y1
+            area = (width) * (height)
             logging.info("Frame=%d Conf=%.2f Area=%.0f", self.frame_id, confidence, area)
 
         annotated = results[0].plot(img=bgr.copy())  # ready for OpenCV encoding
@@ -55,12 +57,12 @@ class DroneDetector:
             "timestamp": timestamp,
             "frame_id": self.frame_id,
             "detected": detected,
-            "confidence": confidence,
-            "x1": x1,
-            "y1": y1,
-            "x2": x2,
-            "y2": y2,
-            "area": area,
+            "confidence": round(confidence, 3),
+            "x1": round(x1, 3),
+            "y1": round(y1, 3),
+            "x2": round(x2, 3),
+            "y2": round(y2, 3),
+            "area": round(area, 3),
             "fps": round(fps, 2)
         }
 
