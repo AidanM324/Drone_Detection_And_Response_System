@@ -11,7 +11,7 @@ LOG_DIR = "/home/pi/yolo/logs"
 MODEL_PATH = "/home/pi/yolo/best.pt"
 
 # Toggle: stream raw camera or YOLO annotated
-ENABLE_YOLO = True
+ENABLE_YOLO = False
 
 app = Flask(__name__)
 
