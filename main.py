@@ -1,6 +1,8 @@
 import atexit
 import logging
 from flask import Flask, Response, render_template
+from raw_frame_logger import RawFrameLogger
+
 
 from data_logging import setup_logging
 from camera import PiCamera
@@ -21,6 +23,9 @@ app = Flask(__name__)
 csvfile, csv_writer = setup_logging(LOG_DIR, prefix="stream_csv")
 print("Logging to:", csvfile.name)
 
+RAW_LOG_DIR = "/home/pi/yolo/logs/raw"
+raw_logger = RawFrameLogger(RAW_LOG_DIR)
+
 cam = PiCamera(size=(640, 480))
 det = DroneDetector(MODEL_PATH) if ENABLE_YOLO else None
 
@@ -31,7 +36,7 @@ def index():
 @app.route("/video")
 def video():
     return Response(
-        mjpeg_generator(cam, detection=det, imgsz=640, conf=0.25, csv_writer=csv_writer, csvfile=csvfile),
+        mjpeg_generator(cam, detection=det, raw_logger=raw_logger, imgsz=640, conf=0.25, csv_writer=csv_writer, csvfile=csvfile),
         mimetype="multipart/x-mixed-replace; boundary=frame",
     )
 
