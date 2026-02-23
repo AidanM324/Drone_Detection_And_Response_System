@@ -12,7 +12,7 @@ class DroneDetector:
         self.prev_time = time.time()
         logging.info("Model loaded: %s", model_path)
 
-    def annotate(self, xbgr_frame, imgsz=640, conf=0.25):
+    def annotate(self, xbgr_frame, imgsz=640, conf=0.60):
 
         #labeling  frame id and timestamp
         self.frame_id += 1

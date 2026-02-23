@@ -2,14 +2,14 @@ import pandas as pd
 from datetime import datetime
 
 RAW_CSV = "/home/pi/yolo/logs/raw/raw_frames_2026-02-08_16-25-27.csv"
-DET_CSV = "/home/pi/yolo/logs/stream_csv_2026-02-08_16-25-27.csv"
+DET_CSV = "/home/pi/yolo/logs/test_1/Test1_NoDrone_MovingObjects_PT_2026-02-23_15-29-50.csv"
 
 raw_df = pd.read_csv(RAW_CSV)
 det_df = pd.read_csv(DET_CSV)
 
 NO_DRONE_INTERVALS = [
-    ("2026-02-08 16:25:27", "2026-02-08 16:30:00"),
-    ("2026-02-08 16:35:47", "2026-02-08 16:36:30"),
+    #("2026-02-08 16:25:27", "2026-02-23 16:30:00"),
+    ("2026-02-23 15:29:50", "2026-02-23 15:32:02"),
 ]
 
 DRONE_VISIBLE_INTERVALS = [
@@ -19,7 +19,7 @@ DRONE_VISIBLE_INTERVALS = [
 raw_df["timestamp"] = pd.to_datetime(raw_df["timestamp"])
 det_df["timestamp"] = pd.to_datetime(det_df["timestamp"])
 
-avg_fps = raw_df["fps"].mean()
+avg_fps = det_df["fps"].mean()
 
 false_positives = 0
 total_minutes = 0
