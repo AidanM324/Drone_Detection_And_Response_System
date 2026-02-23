@@ -10,7 +10,7 @@ from detection import DroneDetector
 from stream import mjpeg_generator
 
 LOG_DIR = "/home/pi/yolo/logs"
-MODEL_PATH = "/home/pi/yolo/best.pt"
+MODEL_PATH = "/home/pi/yolo/best.onnx"
 
 # Toggle: stream raw camera or YOLO annotated
 ENABLE_YOLO = True
@@ -36,7 +36,7 @@ def index():
 @app.route("/video")
 def video():
     return Response(
-        mjpeg_generator(cam, detection=det, raw_logger=raw_logger, imgsz=640, conf=0.25, csv_writer=csv_writer, csvfile=csvfile),
+        mjpeg_generator(cam, detection=det, raw_logger=raw_logger, imgsz=640, conf=0.60, csv_writer=csv_writer, csvfile=csvfile),
         mimetype="multipart/x-mixed-replace; boundary=frame",
     )
 
