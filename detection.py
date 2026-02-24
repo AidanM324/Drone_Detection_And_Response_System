@@ -37,7 +37,7 @@ class DroneDetector:
         confidence = 0.0
         x1 = y1 = x2 = y2 = area = 0.0
 
-        results = self.model.predict(rgb, imgsz=imgsz, conf=conf, verbose=False)
+        results = self.model.predict(rgb, conf=conf, imgsz=imgsz, verbose=False)
         boxes = results[0].boxes
 
         if len(boxes) == 0:
@@ -72,9 +72,20 @@ class DroneDetector:
 
                 #logging.info("Frame=%d Conf=%.2f Area=%.0f", self.frame_id, confidence, area)
 
-        annotated = results[0].plot(img=bgr.copy())  # ready for OpenCV encoding
+        #annotated = results[0].plot(img=bgr.copy())  # ready for OpenCV encoding
         #annotated_bgr = cv2.cvtColor(annotated, cv2.COLOR_RGB2BGR)
         #annotated = results[0].plot()
+
+        annotated = bgr.copy()
+
+        
+        cv2.rectangle(
+            annotated,
+            (int(x1), int(y1)),
+            (int(x2), int(y2)),
+            (0, 255, 0),
+            2
+        )
 
         return annotated, {
             "timestamp": timestamp,
