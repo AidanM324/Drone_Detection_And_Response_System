@@ -39,16 +39,17 @@ class DroneDetector:
         results = self.model.predict(rgb, imgsz=imgsz, conf=conf, verbose=False)
         boxes = results[0].boxes
 
-        for r in results:
+        if len(boxes) == 0:
+            self.persistence_counter = 0
 
-            if len(boxes) > 0:
+
+        else:
+
+            for box in boxes:
                 #logging.info("Detected %d object(s)", len(boxes))
-                #for box in boxes:
-                detected = 1
-                #cls_id = int(box.cls[0])
-                box = boxes[0]
+                #box = boxes[0]
                 confidence = float(box.conf[0])
-                #name = self.model.names.get(cls_id, str(cls_id))
+                
                 x1, y1, x2, y2 = box.xyxy[0].tolist()
                 width = x2 - x1
                 height = y2 - y1
