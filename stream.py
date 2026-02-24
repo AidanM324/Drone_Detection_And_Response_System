@@ -31,6 +31,7 @@ def mjpeg_generator(camera, detection=None, raw_logger=None, imgsz=640, conf=0.6
                        data["timestamp"],
                        data["frame_id"],
                        data["detected"],
+                       data["raw_detected"],
                        data["confidence"],
                        data["x1"],
                        data["y1"],

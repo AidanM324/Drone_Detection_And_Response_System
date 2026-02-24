@@ -6,7 +6,7 @@ from ultralytics import YOLO
 
 
 class DroneDetector:
-    def __init__(self, model_path: str, min_area = 500, confirm_frames = 3):
+    def __init__(self, model_path: str, min_area = 6000, confirm_frames = 3):
         self.model = YOLO(model_path)
         self.frame_id = 0
         self.min_area = min_area
@@ -32,6 +32,7 @@ class DroneDetector:
         rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
         # initialising to zero
+        raw_detected = 0
         detected = 0
         confidence = 0.0
         x1 = y1 = x2 = y2 = area = 0.0
@@ -44,6 +45,8 @@ class DroneDetector:
 
 
         else:
+            raw_detected = 1
+            max_area = 140000
 
             for box in boxes:
                 #logging.info("Detected %d object(s)", len(boxes))
@@ -56,7 +59,7 @@ class DroneDetector:
                 area = (width) * (height)
 
                 #Minimum area
-                if area >= self.min_area:
+                if self.min_area <= area <= max_area:
                     self.persistence_counter += 1
                 else:
                     self.persistence_counter = 0
@@ -77,6 +80,7 @@ class DroneDetector:
             "timestamp": timestamp,
             "frame_id": self.frame_id,
             "detected": detected,
+            "raw_detected": raw_detected,
             "confidence": round(confidence, 3),
             "x1": round(x1, 3),
             "y1": round(y1, 3),
