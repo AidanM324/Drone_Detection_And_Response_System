@@ -23,6 +23,7 @@ def setup_logging(log_dir: str, prefix: str = "detect"):
             "timestamp",
             "frame_id",
             "detected",
+            "raw_detected",
             "confidence",
             "bbox_x1",
             "bbox_y1",
