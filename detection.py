@@ -6,7 +6,7 @@ from ultralytics import YOLO
 
 
 class DroneDetector:
-    def __init__(self, model_path: str, min_area = 6000, confirm_frames = 3):
+    def __init__(self, model_path: str, min_area = 3000, confirm_frames = 3):
         self.model = YOLO(model_path)
         self.frame_id = 0
         self.min_area = min_area
@@ -16,7 +16,7 @@ class DroneDetector:
         self.prev_time = time.time()
         logging.info("Model loaded: %s", model_path)
 
-    def annotate(self, xbgr_frame, imgsz=640, conf=0.60):
+    def annotate(self, xbgr_frame, imgsz=416, conf=0.30):
 
         #labeling  frame id and timestamp
         self.frame_id += 1
