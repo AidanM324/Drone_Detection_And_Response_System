@@ -4,7 +4,7 @@ import traceback
 import time 
 from datetime import datetime
 
-def mjpeg_generator(camera, detection=None, raw_logger=None, imgsz=640, conf=0.60, csv_writer=None, csvfile=None):
+def mjpeg_generator(camera, detection=None, raw_logger=None, imgsz=416, conf=0.30, csv_writer=None, csvfile=None):
     frame_id = 0
     prev_time = time.time()
 
