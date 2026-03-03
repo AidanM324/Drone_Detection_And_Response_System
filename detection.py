@@ -12,6 +12,9 @@ class DroneDetector:
         self.min_area = min_area
         self.confirm_frames = confirm_frames
 
+        self.base_conf = 0.60
+        self.current_conf = self.base_conf
+
         self.persistence_counter = 0
         self.prev_time = time.time()
         logging.info("Model loaded: %s", model_path)
@@ -37,7 +40,7 @@ class DroneDetector:
         confidence = 0.0
         x1 = y1 = x2 = y2 = area = 0.0
 
-        results = self.model.predict(rgb, conf=conf, imgsz=imgsz, verbose=False)
+        results = self.model.predict(rgb, conf=self.current_conf, imgsz=imgsz, verbose=False)
         boxes = results[0].boxes
 
         if len(boxes) == 0:
@@ -69,6 +72,11 @@ class DroneDetector:
                     detected = 1
                 else:
                     detected = 0
+
+                if raw_detected and not detected:
+                    self.current_conf = min(0.85, self.current_conf + 0.02)
+                else:
+                    self.current_conf = max(self.base_conf, self.current_conf - 0.01)
 
                 #logging.info("Frame=%d Conf=%.2f Area=%.0f", self.frame_id, confidence, area)
 
