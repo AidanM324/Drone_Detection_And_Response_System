@@ -12,7 +12,7 @@ class DroneDetector:
         self.min_area = min_area
         self.confirm_frames = confirm_frames
 
-        self.base_conf = 0.60
+        self.base_conf = 0.30
         self.current_conf = self.base_conf
 
         self.persistence_counter = 0

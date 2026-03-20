@@ -10,7 +10,7 @@ from detection import DroneDetector
 from stream import mjpeg_generator
 
 LOG_DIR = "/home/pi/yolo/logs"
-MODEL_PATH = "/home/pi/yolo/models/drone_yolo11n_optimized.onnx"
+MODEL_PATH = "/home/pi/yolo/models/best.onnx"
 
 # Toggle: stream raw camera or YOLO annotated
 ENABLE_YOLO = True
