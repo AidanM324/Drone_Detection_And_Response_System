@@ -31,7 +31,16 @@ class DroneDetector:
         logging.info("Model loaded: %s", model_path)
 
     def _init_kalman(self):
-        dt = 1.0
+        current_time = time.time()
+        dt = current_time - self.last_time
+        self.last_time = current_time
+
+        dt = max(0.01, min(dt, 0.5))
+
+        self.F = self.build_transition_matrix(dt)
+
+        self.x = self.F @ self.x
+        self.P = self.F @ self.P @ self.F.T + self.Q
 
         self.kf.transitionMatrix = np.array(
             [
