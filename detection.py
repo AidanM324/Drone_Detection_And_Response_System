@@ -4,16 +4,21 @@ import logging
 import numpy as np
 import time
 from ultralytics import YOLO
+from gpiozero import TonalBuzzer
+from gpiozero.tones import Tone
+
+buzzer = TonalBuzzer(18)
 
 
 class DroneDetector:
     def __init__(self, model_path: str, min_area=3000, confirm_frames=3, max_area=140000, max_missed_frames=6):
-        self.model = YOLO(model_path)
+        self.model = YOLO(model_path, task="detect")
         self.frame_id = 0
         self.min_area = min_area
         self.max_area = max_area
         self.confirm_frames = confirm_frames
         self.max_missed_frames = max_missed_frames
+        self.alarm_active = False
 
         self.base_conf = 0.30
         self.current_conf = self.base_conf
@@ -21,6 +26,7 @@ class DroneDetector:
         self.persistence_counter = 0
         self.last_confidence = 0.0
         self.prev_time = time.time()
+        self.last_time = time.time()
 
         # 8D state: [cx, cy, w, h, vx, vy, vw, vh], 4D measurement: [cx, cy, w, h].
         self.kf = cv2.KalmanFilter(8, 4)
@@ -36,11 +42,6 @@ class DroneDetector:
         self.last_time = current_time
 
         dt = max(0.01, min(dt, 0.5))
-
-        self.F = self.build_transition_matrix(dt)
-
-        self.x = self.F @ self.x
-        self.P = self.F @ self.P @ self.F.T + self.Q
 
         self.kf.transitionMatrix = np.array(
             [
@@ -191,12 +192,16 @@ class DroneDetector:
         height = max(0.0, y2 - y1)
         area = width * height
 
-        #annotated = results[0].plot(img=bgr.copy())  # ready for OpenCV encoding
-        #annotated_bgr = cv2.cvtColor(annotated, cv2.COLOR_RGB2BGR)
-        #annotated = results[0].plot()
-
         annotated = bgr.copy()
 
+        #Buzzer control logic / activates on confirmed detection
+        if detected and not self.alarm_active:
+            buzzer.play(Tone("A4"))
+            self.alarm_active = True
+
+        elif not detected and self.alarm_active:
+            buzzer.stop()
+            self.alarm_active = False
         
         if area > 0:
             cv2.rectangle(
