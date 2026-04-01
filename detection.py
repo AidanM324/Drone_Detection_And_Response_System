@@ -6,9 +6,17 @@ import time
 from ultralytics import YOLO
 from gpiozero import TonalBuzzer
 from gpiozero.tones import Tone
+from gpiozero import Servo
+from gpiozero.pins.pigpio import PiGPIOFactory
+factory = PiGPIOFactory()
 
+pan = Servo(19, pin_factory=factory)
+tilt = Servo(20, pin_factory=factory)
 buzzer = TonalBuzzer(18)
 
+# start centred
+pan.value = 0
+tilt.value = 0
 
 class DroneDetector:
     def __init__(self, model_path: str, min_area=3000, confirm_frames=3, max_area=140000, max_missed_frames=6):
