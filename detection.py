@@ -211,6 +211,35 @@ class DroneDetector:
             buzzer.stop()
             self.alarm_active = False
         
+        #SERVO TRACKING LOGIC
+        if detected and area > 0:
+
+            # Get centre of bounding box (Kalman-smoothed)
+            cx = (x1 + x2) / 2.0
+            cy = (y1 + y2) / 2.0
+
+            frame_h, frame_w = annotated.shape[:2]
+
+            # Normalise (0 → 1)
+            nx = cx / frame_w
+            ny = cy / frame_h
+
+            # Convert to servo targets (-1 → 1)
+            target_pan  = (nx - 0.5) * 2
+            target_tilt = (0.5 - ny) * 2
+
+            # Smoothing factor (tune this)
+            alpha = 0.2
+
+            # Smooth movement
+            pan.value  += alpha * (target_pan  - pan.value)
+            tilt.value += alpha * (target_tilt - tilt.value)
+
+        else:
+            # Return to centre when no detection
+            pan.value += 0.1 * (0 - pan.value)
+            tilt.value += 0.1 * (0 - tilt.value)
+
         if area > 0:
             cv2.rectangle(
                 annotated,
