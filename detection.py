@@ -4,15 +4,14 @@ import logging
 import numpy as np
 import time
 from ultralytics import YOLO
-from gpiozero import TonalBuzzer
-from gpiozero.tones import Tone
+from gpiozero import Buzzer
 from gpiozero import Servo
 from gpiozero.pins.pigpio import PiGPIOFactory
 factory = PiGPIOFactory()
 
 pan = Servo(19, pin_factory=factory)
 tilt = Servo(20, pin_factory=factory)
-buzzer = TonalBuzzer(18)
+buzzer = Buzzer(18)
 
 # start centred
 pan.value = 0
@@ -203,13 +202,14 @@ class DroneDetector:
         annotated = bgr.copy()
 
         #Buzzer control logic / activates on confirmed detection
-        if detected and not self.alarm_active:
-            buzzer.play(Tone("A4"))
-            self.alarm_active = True
+        #if detected and not self.alarm_active:
+        #    #buzzer.play(Tone("A4"))
+        #    buzzer.on()
+        #   self.alarm_active = True
 
-        elif not detected and self.alarm_active:
-            buzzer.stop()
-            self.alarm_active = False
+        #if not detected and self.alarm_active:
+        #    buzzer.stop()
+        #    self.alarm_active = False
         
         #SERVO TRACKING LOGIC
         if detected and area > 0:
@@ -254,7 +254,9 @@ class DroneDetector:
             "frame_id": self.frame_id,
             "detected": detected,
             "raw_detected": raw_detected,
-            "confidence": round(confidence, 3),
+            "confidence_threshold": round(self.current_conf, 2),
+            "confidence": round(confidence, 2),
+            "confidence_minus_threshold": round(confidence - self.current_conf, 2),
             "x1": round(x1, 3),
             "y1": round(y1, 3),
             "x2": round(x2, 3),
