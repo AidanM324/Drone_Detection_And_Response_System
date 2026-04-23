@@ -58,6 +58,27 @@ for start, end in DRONE_VISIBLE_INTERVALS:
 
 miss_rate = missed / total_frames if total_frames > 0 else 0
 
+# Threshold movement metrics over the detection CSV timespan.
+threshold_min = det_df["confidence_threshold"].min()
+threshold_max = det_df["confidence_threshold"].max()
+threshold_start = det_df.iloc[0]["confidence_threshold"]
+threshold_end = det_df.iloc[-1]["confidence_threshold"]
+threshold_start_to_end_delta = threshold_end - threshold_start
+
+# Percentage of detected frames where confidence fell below threshold.
+detected_rows = det_df[det_df["detected"] == 1]
+outside_threshold_count = len(detected_rows[detected_rows["confidence_minus_threshold"] < 0])
+outside_threshold_pct = (
+    (outside_threshold_count / len(detected_rows)) * 100
+    if len(detected_rows) > 0
+    else 0
+)
+
 print(f"Average FPS: {avg_fps:.2f}")
 print(f"False positives per minute: {fp_per_min:.2f}")
-print(f"Missed Detection Rate: {miss_rate:.2f}%")
+print(f"Missed Detection Rate: {miss_rate * 100:.2f}%")
+print(
+    f"Confidence threshold min/max: {threshold_min:.2f} / {threshold_max:.2f} "
+    f"(start->end delta: {threshold_start_to_end_delta:+.2f})"
+)
+print(f"Detections below threshold: {outside_threshold_pct:.2f}%")
