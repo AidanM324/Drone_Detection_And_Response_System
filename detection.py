@@ -7,10 +7,26 @@ from ultralytics import YOLO
 from gpiozero import Buzzer
 from gpiozero import Servo
 from gpiozero.pins.pigpio import PiGPIOFactory
-factory = PiGPIOFactory()
 
-pan = Servo(19, pin_factory=factory)
-tilt = Servo(20, pin_factory=factory)
+
+ALARM_ENABLED = False
+
+
+def _create_pin_factory():
+    try:
+        return PiGPIOFactory()
+    except OSError:
+        logging.warning(
+            "pigpio daemon is unavailable; falling back to gpiozero's default pin factory"
+        )
+        return None
+
+
+factory = _create_pin_factory()
+
+servo_kwargs = {"pin_factory": factory} if factory is not None else {}
+pan = Servo(19, **servo_kwargs)
+tilt = Servo(20, **servo_kwargs)
 buzzer = Buzzer(18)
 
 # start centred
@@ -191,9 +207,9 @@ class DroneDetector:
         detected = 1 if self.persistence_counter >= self.confirm_frames else 0
 
         if raw_detected and not detected:
-            self.current_conf = min(0.85, self.current_conf + 0.02)
-        else:
-            self.current_conf = max(self.base_conf, self.current_conf - 0.01)
+            self.current_conf = min(0.60, self.current_conf + 0.02)
+        elif not raw_detected:
+            self.current_conf = max(self.base_conf, self.current_conf - 0.02)
 
         width = max(0.0, x2 - x1)
         height = max(0.0, y2 - y1)
@@ -201,15 +217,19 @@ class DroneDetector:
 
         annotated = bgr.copy()
 
-        #Buzzer control logic / activates on confirmed detection
-        #if detected and not self.alarm_active:
-        #    #buzzer.play(Tone("A4"))
-        #    buzzer.on()
-        #   self.alarm_active = True
+        # Buzzer/alarm stays disabled for now unless ALARM_ENABLED is set True.
+        if ALARM_ENABLED:
+            # Activates on confirmed detection.
+            if detected and not self.alarm_active:
+                # buzzer.play(Tone("A4"))
+                buzzer.on()
+                self.alarm_active = True
 
-        #if not detected and self.alarm_active:
-        #    buzzer.stop()
-        #    self.alarm_active = False
+            if not detected and self.alarm_active:
+                buzzer.stop()
+                self.alarm_active = False
+        else:
+            self.alarm_active = False
         
         #SERVO TRACKING LOGIC
         if detected and area > 0:
@@ -225,10 +245,10 @@ class DroneDetector:
             ny = cy / frame_h
 
             # Convert to servo targets (-1 → 1)
-            target_pan  = (nx - 0.5) * 2
+            target_pan  = (0.5 - nx) * 2
             target_tilt = (0.5 - ny) * 2
 
-            # Smoothing factor (tune this)
+            # Smoothing factor 
             alpha = 0.2
 
             # Smooth movement

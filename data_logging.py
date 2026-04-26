@@ -9,12 +9,6 @@ def setup_logging(log_dir: str, prefix: str = "detect"):
         log_dir, f"{prefix}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
     )
 
-    ##logging.basicConfig(
-    #    filename=logfile,
-    #    level=logging.INFO,
-    #    format="%(asctime)s [%(levelname)s] %(message)s",
-    #)
-
     csvfile = open(logfile, mode='w', newline='')
     csv_writer = csv.writer(csvfile)
 
@@ -38,7 +32,3 @@ def setup_logging(log_dir: str, prefix: str = "detect"):
     csv_writer.writerow(header)
 
     return csvfile, csv_writer
-
-
-    #logging.info("Session started")
-    #return logfile
